@@ -1,11 +1,24 @@
 import os
+from io import BytesIO
 import pandas as pd
 import matplotlib
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 from datetime import datetime
 
 matplotlib.use('SVG')
 PATH = os.path.dirname(os.path.abspath(os.path.join(__file__, "..")))
+
+def getHoursByNickname(df: pd.DataFrame, nick: str) -> pd.Series:
+    return df[df.nickname == nick].iloc[0, 30:] / 60
+
+
+def getExamsByNickname(df: pd.DataFrame, nick: str) -> pd.Series:
+    return df[df.nickname == nick].iloc[0, [12, 18, 24, 29]]
+
+
+def formatDates(dates: list[datetime], format: str) -> list[str]:
+    return list(map(lambda x: x.strftime(format), dates))
+
 
 def createDatetimes() -> list[datetime]:
     dates = []
@@ -19,19 +32,8 @@ def createDatetimes() -> list[datetime]:
     return dates
 
 
-def getHoursByNickname(df: pd.DataFrame, nick: str) -> pd.Series:
-    return df[df.nickname == nick].iloc[0, 30:] / 60
-
-def getExamsByNickname(df: pd.DataFrame, nick: str) -> pd.Series:
-    return df[df.nickname == nick].iloc[0, [12, 18, 24, 29]]
-
-
-def formatDates(dates: list[datetime], format: str) -> list[str]:
-    return list(map(lambda x: x.strftime(format), dates))
-
-
-def getExamDynamic(df: pd.DataFrame, nicknames: list[str], exams: list[str]) -> None:
-    plt.figure(figsize=(15, 10))
+def getExamDynamic(df: pd.DataFrame, nicknames: list[str], exams: list[str]) -> bytes:
+    plt.figure(figsize=(10, 10))
     plt.title("Результаты экзаменов")
     plt.xlabel("Экзамен")
     plt.ylabel("XP за экзамен")
@@ -43,13 +45,17 @@ def getExamDynamic(df: pd.DataFrame, nicknames: list[str], exams: list[str]) -> 
     for nick in nicknames:
         if nick in df.nickname.to_list():
             plt.plot(exams, getExamsByNickname(df, nick), label=nick)
+            
+    plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)
+    plt.tight_layout()
 
-    plt.legend()
-    plt.savefig(os.path.join(PATH, "images\\exam.png"), bbox_inches="tight")
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
     plt.clf()
+    return buffer.getvalue()
     
     
-def getTimeDynamic(df: pd.DataFrame, nicknames: list[str], dates: list[datetime]) -> None:
+def getTimeDynamic(df: pd.DataFrame, nicknames: list[str], dates: list[datetime]) -> bytes:
     plt.figure(figsize=(20, 10))
     plt.title("Время в кампусе")
     plt.xlabel("Дата")
@@ -61,6 +67,10 @@ def getTimeDynamic(df: pd.DataFrame, nicknames: list[str], dates: list[datetime]
         if nick in df.nickname.to_list():
             plt.plot(dates, getHoursByNickname(df, nick), label=nick)
 
-    plt.legend()
-    plt.savefig(os.path.join(PATH, "images\\time.png"), bbox_inches="tight")
+    plt.legend(bbox_to_anchor=(1.07, 1), borderaxespad=0)
+    plt.tight_layout()
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
     plt.clf()
+    return buffer.getvalue()

@@ -1,4 +1,5 @@
 import os
+import io
 import telebot
 import pandas as pd
 import functions.graph as graph
@@ -18,7 +19,9 @@ def send_welcome(message):
 @bot.message_handler(commands=['help'])
 def send_welcome(message):
     bot.reply_to(message,
-                 "Для получения статистики - введи ники через запятую\n<i>*для получения средних значений, введи в качестве ника Средние</i>")
+                 ("Для получения статистики - введи ники через запятую\n"
+                 "При попытке отобразить <b>более 45 ников</b>, в легенде будут указаны <b>только</b> первые 45 ников\n"
+                 "<i>*для получения средних значений, введите в качестве ника Средние</i>"))
 
 
 @bot.message_handler(func=lambda message: True, content_types=["text"])
@@ -32,14 +35,14 @@ def echo_message(message):
     founded_nicknames_count = sum(df.nickname.isin(nicknames))
     
     if founded_nicknames_count > 0:
-        graph.getExamDynamic(df, nicknames, exams)
-        graph.getTimeDynamic(df, nicknames, dates)
+        exam_img_buffer = io.BytesIO(graph.getExamDynamic(df, nicknames, exams))
+        time_img_buffer = io.BytesIO(graph.getTimeDynamic(df, nicknames, dates))
         
-        exam_img_path = os.path.join(graph.PATH, "images\\exam.png")
-        time_img_path = os.path.join(graph.PATH, "images\\time.png")
-        
-        exam_img = telebot.types.InputMediaPhoto(telebot.types.InputFile(exam_img_path), caption="Экзамен и время в кампусе", show_caption_above_media=True)
-        time_img = telebot.types.InputMediaPhoto(telebot.types.InputFile(time_img_path), show_caption_above_media=True)
+        exam_img = telebot.types.InputMediaPhoto(telebot.types.InputFile(exam_img_buffer),
+                                                 caption="Экзамен и время в кампусе",
+                                                 show_caption_above_media=True)
+        time_img = telebot.types.InputMediaPhoto(telebot.types.InputFile(time_img_buffer),
+                                                 show_caption_above_media=True)
         
         bot.send_media_group(message.chat.id,
                             [exam_img, time_img],
