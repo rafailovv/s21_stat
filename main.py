@@ -31,7 +31,7 @@ def echo_message(message):
     dates = graph.formatDates(graph.createDatetimes(), "%d.%m")
     exams = ["E01D05", "E02D12", "E03D19", "E04D26"]
 
-    nicknames = list(map(lambda x: x.strip(), message.text.split(',')))
+    nicknames = sorted(set(map(lambda x: x.strip(), message.text.split(','))))
     founded_nicknames_count = sum(df.nickname.isin(nicknames))
     
     if founded_nicknames_count > 0:
@@ -50,5 +50,6 @@ def echo_message(message):
     else:
         bot.reply_to(message,
                      "<b>Ни одного ника в сообщении не найдено!</b>")
+
 
 bot.infinity_polling()
