@@ -5,8 +5,7 @@ from matplotlib import pyplot as plt
 from datetime import datetime
 
 matplotlib.use('SVG')
-ABSOLUTE_FULL_PATH = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
-ABSOLUTE_PATH = ABSOLUTE_FULL_PATH[:ABSOLUTE_FULL_PATH.rindex('/')]
+PATH = os.path.dirname(os.path.abspath(os.path.join(__file__, "..")))
 
 def createDatetimes() -> list[datetime]:
     dates = []
@@ -31,23 +30,6 @@ def formatDates(dates: list[datetime], format: str) -> list[str]:
     return list(map(lambda x: x.strftime(format), dates))
 
 
-def getTimeDynamic(df: pd.DataFrame, nicknames: list[str], dates: list[datetime]) -> None:
-    plt.figure(figsize=(20, 10))
-    plt.title("Время в кампусе")
-    plt.xlabel("Дата")
-    plt.ylabel("Время, часы")
-    plt.yticks(list(range(0, 25)))
-    plt.grid(alpha=0.5, linestyle = "--", linewidth = 0.5)
-
-    for nick in nicknames:
-        if nick in df.nickname.to_list():
-            plt.plot(dates, getHoursByNickname(df, nick), label=nick)
-
-    plt.legend()
-    plt.savefig(f"{ABSOLUTE_PATH}/images/time.png", bbox_inches="tight")
-    plt.clf()
-
-
 def getExamDynamic(df: pd.DataFrame, nicknames: list[str], exams: list[str]) -> None:
     plt.figure(figsize=(15, 10))
     plt.title("Результаты экзаменов")
@@ -63,5 +45,22 @@ def getExamDynamic(df: pd.DataFrame, nicknames: list[str], exams: list[str]) -> 
             plt.plot(exams, getExamsByNickname(df, nick), label=nick)
 
     plt.legend()
-    plt.savefig(f"{ABSOLUTE_PATH}/images/exam.png", bbox_inches="tight")
+    plt.savefig(os.path.join(PATH, "images\\exam.png"), bbox_inches="tight")
+    plt.clf()
+    
+    
+def getTimeDynamic(df: pd.DataFrame, nicknames: list[str], dates: list[datetime]) -> None:
+    plt.figure(figsize=(20, 10))
+    plt.title("Время в кампусе")
+    plt.xlabel("Дата")
+    plt.ylabel("Время, часы")
+    plt.yticks(list(range(0, 25)))
+    plt.grid(alpha=0.5, linestyle = "--", linewidth = 0.5)
+
+    for nick in nicknames:
+        if nick in df.nickname.to_list():
+            plt.plot(dates, getHoursByNickname(df, nick), label=nick)
+
+    plt.legend()
+    plt.savefig(os.path.join(PATH, "images\\time.png"), bbox_inches="tight")
     plt.clf()

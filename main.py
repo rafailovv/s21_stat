@@ -23,7 +23,7 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True, content_types=["text"])
 def echo_message(message):
-    df = pd.read_csv(f"{graph.ABSOLUTE_PATH}/data/users_means.csv")
+    df = pd.read_csv(os.path.join(graph.PATH, "data\\users_means.csv"))
 
     dates = graph.formatDates(graph.createDatetimes(), "%d.%m")
     exams = ["E01D05", "E02D12", "E03D19", "E04D26"]
@@ -35,8 +35,11 @@ def echo_message(message):
         graph.getExamDynamic(df, nicknames, exams)
         graph.getTimeDynamic(df, nicknames, dates)
         
-        exam_img = telebot.types.InputMediaPhoto(telebot.types.InputFile(f"{graph.ABSOLUTE_PATH}/images/exam.png"), caption="Экзамен и время в кампусе", show_caption_above_media=True)
-        time_img = telebot.types.InputMediaPhoto(telebot.types.InputFile(f"{graph.ABSOLUTE_PATH}/images/time.png"), show_caption_above_media=True)
+        exam_img_path = os.path.join(graph.PATH, "images\\exam.png")
+        time_img_path = os.path.join(graph.PATH, "images\\time.png")
+        
+        exam_img = telebot.types.InputMediaPhoto(telebot.types.InputFile(exam_img_path), caption="Экзамен и время в кампусе", show_caption_above_media=True)
+        time_img = telebot.types.InputMediaPhoto(telebot.types.InputFile(time_img_path), show_caption_above_media=True)
         
         bot.send_media_group(message.chat.id,
                             [exam_img, time_img],
