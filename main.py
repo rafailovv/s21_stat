@@ -32,7 +32,7 @@ def send_help(message: telebot.types.Message) -> None:
 @bot.message_handler(func=lambda message: True, content_types=["text"])
 def send_stats(message: telebot.types.Message) -> None:
     """ Send graphs by nicknames in message """
-    df = pd.read_csv(os.path.join(graph.PATH, "data\\users_means.csv"))
+    df = pd.read_csv(os.path.join(graph.PATH, "data/users_means.csv"))
 
     dates = graph.format_dates(graph.create_datetimes(), "%d.%m")
     exams = ["E01D05", "E02D12", "E03D19", "E04D26"]
