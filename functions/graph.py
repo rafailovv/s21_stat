@@ -12,6 +12,9 @@ PATH = os.path.dirname(os.path.abspath(os.path.join(__file__, "..")))
 
 def get_hours_by_nickname(df: pd.DataFrame, nick: str) -> pd.Series:
     """ Return list of hours in campus by days by nickname """
+    if nick == "Средние":
+        return df.iloc[:, 30:].astype(float).mean(axis=0) / 60
+
     user_data = df[df.nickname == nick]
     if user_data.empty:
         return pd.Series([0] * (len(df.columns) - 30))  # Возвращаем пустой график
@@ -19,6 +22,9 @@ def get_hours_by_nickname(df: pd.DataFrame, nick: str) -> pd.Series:
 
 def get_exams_by_nickname(df: pd.DataFrame, nick: str) -> pd.Series:
     """ Return list of exams XP by nickname """
+    if nick == "Средние":
+        return df.iloc[:, [12, 18, 24, 29]].astype(float).mean(axis=0)
+
     user_data = df[df.nickname == nick]
     if user_data.empty:
         return pd.Series([0, 0, 0, 0])  # Возвращаем пустой график

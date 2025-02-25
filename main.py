@@ -48,7 +48,7 @@ def send_stats(message: telebot.types.Message) -> None:
 
     # Читаем данные из CSV
     try:
-        df = pd.read_csv(os.path.join(graph.PATH, "data/users_means.csv"), dtype=str)
+        df = pd.read_csv(os.path.join(graph.PATH, "data/users.csv"), dtype=str)
     except Exception:
         bot.reply_to(message, "Ошибка загрузки данных! Попробуйте позже.")
         return
@@ -64,7 +64,8 @@ def send_stats(message: telebot.types.Message) -> None:
         return
 
     # Фильтрация существующих ников
-    found_nicknames = [nick for nick in nicknames if nick in df.nickname.to_list()]
+    found_nicknames = [nick for nick in nicknames
+                       if nick in df.nickname.to_list() or nick == "Средние"]
     if not found_nicknames:
         bot.reply_to(message, "<b>Ни одного ника не найдено!</b>")
         return
