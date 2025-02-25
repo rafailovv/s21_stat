@@ -34,7 +34,9 @@ def create_datetimes() -> list[datetime]:
     end_date = datetime(2025, 2, 14)
     return [start_date + timedelta(days=i) for i in range((end_date - start_date).days + 1)]
 
-def plot_graph(title: str, xlabel: str, ylabel: str, x_values: list, y_values_dict: dict, y_ticks: list, max_line=None) -> bytes:
+def plot_graph(title: str, xlabel: str, ylabel: str,
+               x_values: list, y_values_dict: dict, y_ticks: list,
+               max_line=None) -> bytes:
     """ General function to plot graphs """
     plt.figure(figsize=(12, 6))
     plt.title(title)
@@ -44,7 +46,8 @@ def plot_graph(title: str, xlabel: str, ylabel: str, x_values: list, y_values_di
     plt.grid(alpha=0.5, linestyle="--", linewidth=0.5)
 
     if max_line:
-        plt.plot(x_values, [max_line] * len(x_values), label="Максимум", linestyle="--", color="red")
+        plt.plot(x_values, [max_line] * len(x_values),
+                 label="Максимум", linestyle="--", color="red")
 
     for nick, y_values in y_values_dict.items():
         plt.plot(x_values, y_values, label=nick)
@@ -60,9 +63,11 @@ def plot_graph(title: str, xlabel: str, ylabel: str, x_values: list, y_values_di
 def get_exam_dynamic(df: pd.DataFrame, nicknames: list[str], exams: list[str]) -> bytes:
     """ Returns bytes object with exams graphs for nicknames """
     y_values_dict = {nick: get_exams_by_nickname(df, nick) for nick in nicknames}
-    return plot_graph("Результаты экзаменов", "Экзамен", "XP за экзамен", exams, y_values_dict, list(range(0, 46)), max_line=45)
+    return plot_graph("Результаты экзаменов", "Экзамен", "XP за экзамен",
+                      exams, y_values_dict, list(range(0, 46)), max_line=45)
 
 def get_time_dynamic(df: pd.DataFrame, nicknames: list[str], dates: list[datetime]) -> bytes:
     """ Returns bytes object with time in campus by days graphs for nicknames """
     y_values_dict = {nick: get_hours_by_nickname(df, nick) for nick in nicknames}
-    return plot_graph("Время в кампусе", "Дата", "Время, часы", dates, y_values_dict, list(range(0, 25)))
+    return plot_graph("Время в кампусе", "Дата", "Время, часы",
+                      dates, y_values_dict, list(range(0, 25)))
